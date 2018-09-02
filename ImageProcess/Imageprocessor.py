@@ -52,6 +52,7 @@ def TwoDim_BPFilter(prearr, thresholdL, thresholdH):
         j=0
         i=i+1
     i=0                                     #stack proteck
+
     return array
 
 # Fuzzificate the edge of two objects in rows, 0 < threshold < 255
@@ -107,6 +108,33 @@ def TwoDim_Diverse(prearr):
     i=0                                     #stack proteck
     return array
 
+def TwoDim_PersHorRot_Trans(prearr,angle,dist):
+    height=prearr.shape[0]
+    length=prearr.shape[1]
+    angle_tra=np.cos(angle_to_radian(angle))
+    #
+    angle_sha=np.sin(angle_to_radian(angle))
+    height_out=height*angle_tra
+    delta=height*angle_sha
+    length_out=dist*length/(dist+delta)
+    #
+    array = np.zeros(shape=(prearr.shape[0],prearr.shape[1]))
+    tan_yi=(length-length_out)/height_out
+    #
+    i=0
+    j=0
+    propor=0
+    while i<prearr.shape[0]:
+        while j<prearr.shape[1]:
+            propor=(length-i*angle_tra*tan_yi)/length
+            array[int(i*angle_tra)][int(j*propor)]=prearr[i][j]
+            j=j+1
+        j=0
+        propor=0
+        i=i+1
+    i=0
+    return array
+
 # test code
 image=img.imread("C:\\Users\\The Eternal\\Pictures\\th.jpg") #pictures in any path's okay
 #car_out=TwoDim_BPFilter(image[:,:,0],100,200)
@@ -116,3 +144,14 @@ peo_out3=TwoDim_Diverse(image[:,:,0])
 plt.imshow(image[:,:,0],cmap='Greys_r')
 plt.show()
 #print(car_out)
+
+plt.ion()
+angle=0
+while angle <40000:
+    peo_out3=TwoDim_PersHorRot_Trans(image[:,:,0],60,angle)
+    angle=angle+1000
+    plt.imshow(peo_out3,cmap='Greys_r')
+    plt.show()
+    plt.pause(0.01)
+plt.ioff()
+plt.show()
